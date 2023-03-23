@@ -16,7 +16,29 @@ service cloud.firestore {
       resource.data.authorId == request.auth.uid);
     }
 
-    // Add new rules here
+    // Utility function to check if the user is an admin within the app.
+    function isAdministrator() {
+      // TODO: Migrate this over to use claims in the user token. See: https://firebase.google.com/docs/auth/admin/custom-claims
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data.isAdmin == true;
+    }
+
+    match /todos/{todoId} {
+      // Any authenticated user may create to-do items for themselves.
+      allow create: if (request.auth != null)
+      // Users can view, update and delete their own to-do items.
+      allow read, write, update: if (request.auth != null && (resource.data.uid == request.auth.uid))
+    }
+
+    match /users/{userId} {
+      // Any authenticated user may create a profile and view other users' profiles.
+      allow create, read: if request.auth.uid != null;
+      // Any authenticated user is allowed to edit their own profile and every else's profile if function isAdministrator() returns true.
+      // Allow admins to update all fields and non-admins to update only their own data, but not their isAdmin status.
+      allow update: if request.auth != null && (isAdministrator() || (request.auth.uid == resource.data.uid && !(request.resource.data.diff(resource.data).affectedKeys().hasAny(['isAdmin']))));
+    }
+
+      
+
+    }
    
   }
-}

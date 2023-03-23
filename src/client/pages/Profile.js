@@ -23,6 +23,18 @@ const Profile = () => {
     }
   );
 
+
+  const handleAdminChange = (e) => {
+    if(userDoc == null || userDoc === undefined) return;
+    if (uid === user.uid) {
+      if (!window.confirm('Are you sure you want to change your own admin status? This could cause problems.')) {
+        e.target.checked = !e.target.checked;
+        return;
+      }
+    }
+    updateUser(uid, { isAdmin: e.target.checked });
+  };
+
   // Check if current user is an admin
   const [adminMode, setAdminMode] = useState(false);
 
@@ -54,6 +66,32 @@ const Profile = () => {
               />
             </Card>
           </>
+        )}
+        {adminMode && (
+          <Card>
+            <div className="space-y-8">
+              <div>
+                <h3 className="text-lg leading-6 font-medium text-gray-900">
+                  Adminstrator Options
+                </h3>
+                <p className="mt-1 text-sm text-gray-500">
+                  Change user permissions.
+                </p>
+                <label htmlFor="admin-checkbox">
+                  <input
+                    id="admin-checkbox"
+                    type="checkbox"
+                    defaultChecked={userDoc?.isAdmin || false}
+                    className="form-checkbox h-4 w-4 text-indigo-600 transition duration-150 ease-in-out"
+                    onChange={handleAdminChange}
+                  />
+                  <span className="ml-2 text-sm leading-5 text-gray-900">
+                    Is Admin
+                  </span>
+                </label>
+              </div>
+            </div>
+          </Card>
         )}
       </LoadingError>
     </main>
