@@ -2,7 +2,7 @@ import React from 'react';
 import { useHistory } from 'react-router-dom';
 import Card from './Card';
 
-const UserCard = ({ userDoc, isCurrentUser, isCurrentUserAdmin }) => {
+const UserCard = ({ userDoc, isCurrentUser }) => {
   const history = useHistory();
 
   const getInitials = (displayName) => {
@@ -42,17 +42,15 @@ const UserCard = ({ userDoc, isCurrentUser, isCurrentUserAdmin }) => {
               </div>
             </div>
           </div>
-
-          {(isCurrentUserAdmin || isCurrentUser) && (
-            <div className="sm:col-span-1 lg:col-span-2 space-x-4 flex flex-wrap justify-center sm:justify-end items-center">
-              <button
-                type="button"
-                className="inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500"
-                onClick={() => history.push(`/users/${userDoc.uid}`)}
-              >
-              Edit
-              </button>
-            </div>)}
+          <div className="sm:col-span-1 lg:col-span-2 space-x-4 flex flex-wrap justify-center sm:justify-end items-center">
+            <button
+              type="button"
+              className="inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500"
+              onClick={() => history.push(`/users/${userDoc.uid}`)}
+            >
+            Edit
+            </button>
+          </div>
         </div>
       </li>
     </Card>

@@ -17,9 +17,7 @@ const Users = () => {
     snapshotListenOptions: { includeMetadataChanges: true },
   });
 
-  // Check if current user is an admin by checking userDocs
-  const isCurrentUserAdmin = userDocs?.find((userDoc) => userDoc.uid === user.uid).isAdmin;
-  
+
   return (
     <>
       <Helmet>
@@ -52,7 +50,6 @@ const Users = () => {
                   key={`user-${userDoc.uid}`}
                   userDoc={userDoc}
                   isCurrentUser={user.uid === userDoc.uid}
-                  isCurrentUserAdmin={isCurrentUserAdmin}
                 />
               ))}
             </ul>

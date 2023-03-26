@@ -34,10 +34,9 @@ service cloud.firestore {
 
     // Allow logged in users to read user data, but only allow them to update their own data.
     match /users/{user} {
-      // Only allow admin users to create a new user. Normal accounts are made through firebase auth.
-      allow create: if request.auth != null && isAdministrator();
+      // Make sure users can't create new users that aren't their own
+      allow create: if request.auth != null && request.resource.data.uid == request.auth.uid;
       allow read: if request.auth != null;
-
       // Allow admins to update all fields and non-admins to update only their own data, but not their isAdmin status.
       allow update: if request.auth != null && (isAdministrator() || (request.auth.uid == resource.data.uid && !(request.resource.data.diff(resource.data).affectedKeys().hasAny(['isAdmin']))));
     }
