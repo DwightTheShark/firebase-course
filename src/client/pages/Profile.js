@@ -23,17 +23,15 @@ const Profile = () => {
     }
   );
 
-
-  const handleAdminChange = (e) => {
-    if(userDoc == null || userDoc === undefined) return;
+  const submitPermissionsChange = () => {
     if (uid === user.uid) {
-      if (!window.confirm('Are you sure you want to change your own admin status? This could cause problems.')) {
-        e.target.checked = !e.target.checked;
+      if (!window.confirm('Are you sure you want to change your own permissions? This could cause problems.')) {
         return;
       }
     }
-    updateUser(uid, { isAdmin: e.target.checked });
+    updateUser(uid, { isAdmin: userDoc.isAdmin });
   };
+
 
   // Check if current user is an admin
   const [adminMode, setAdminMode] = useState(false);
@@ -45,6 +43,7 @@ const Profile = () => {
         .get()
         .then((currentUser) => setAdminMode(currentUser.data().isAdmin));
     }
+
   }, []);
 
   return (
@@ -67,28 +66,37 @@ const Profile = () => {
             </Card>
           </>
         )}
-        {adminMode && (
+        {userDoc && adminMode && (
           <Card>
             <div className="space-y-8">
               <div>
                 <h3 className="text-lg leading-6 font-medium text-gray-900">
                   Adminstrator Options
                 </h3>
-                <p className="mt-1 text-sm text-gray-500">
-                  Change user permissions.
-                </p>
-                <label htmlFor="admin-checkbox">
-                  <input
-                    id="admin-checkbox"
-                    type="checkbox"
-                    defaultChecked={userDoc?.isAdmin || false}
-                    className="form-checkbox h-4 w-4 text-indigo-600 transition duration-150 ease-in-out"
-                    onChange={handleAdminChange}
-                  />
-                  <span className="ml-2 text-sm leading-5 text-gray-900">
+                <p className="mt-1 text-md text-gray-500">User permissions</p>
+                <div className="flex justify-between items-center my-2 h-5">
+                  <label
+                    htmlFor="item"
+                    className="flex items-center text-sm text-gray-700"
+                  >
+                    <input
+                      type="checkbox"
+                      onChange={() => { userDoc.isAdmin = !userDoc.isAdmin}}
+                      defaultChecked={userDoc.isAdmin}
+                      className="mr-3 focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300 rounded"
+                    />
                     Is Admin
-                  </span>
-                </label>
+                  </label>
+                </div>
+              </div>
+              <div className="pt-5 flex justify-end">
+                <button
+                  type="submit"
+                  className="ml-3 inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                  onClick={() => submitPermissionsChange()}
+                >
+                  Save
+                </button>
               </div>
             </div>
           </Card>
