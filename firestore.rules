@@ -16,7 +16,29 @@ service cloud.firestore {
       resource.data.authorId == request.auth.uid);
     }
 
-    // Add new rules here
-   
+    // Utility function to check if the user is an admin within the app.
+    function isAdministrator() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data.isAdmin == true;
+    }
+
+    
+    match /todos/{todoId} {
+      // Allow all logged-in users to create a new todo. Ensure users can't make todo's for other users.
+      allow create: if request.auth != null && request.resource.data.uid == request.auth.uid;
+
+      // Allow users to read/write/update their own todos.
+      // TODO: Allow administrators to read/write/update all todos when appropriate UI is added.
+      allow read, write, update: if request.auth != null &&
+        (request.auth.uid == resource.data.uid);
+    }
+
+    // Allow logged in users to read user data, but only allow them to update their own data.
+    match /users/{user} {
+      // Make sure users can't create new users that aren't their own
+      allow create: if request.auth != null && request.resource.data.uid == request.auth.uid;
+      allow read: if request.auth != null;
+      // Allow admins to update all fields and non-admins to update only their own data, but not their isAdmin status.
+      allow update: if request.auth != null && (isAdministrator() || (request.auth.uid == resource.data.uid && !(request.resource.data.diff(resource.data).affectedKeys().hasAny(['isAdmin']))));
+    }
   }
 }
